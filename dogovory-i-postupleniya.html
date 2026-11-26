@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Договоры и поступления | Перекрёсток</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#f2f5fa;color:#172641;font:16px system-ui,sans-serif} main{max-width:1140px;margin:auto;padding:32px 20px} header{background:#162641;color:#fff;padding:27px 30px;border-radius:20px} h1{font-size:clamp(26px,5vw,43px);margin:6px 0} h2{font-size:20px;margin:0 0 17px} p{line-height:1.5} header p{margin:0;color:#cbd8ea}.controls{display:flex;gap:16px;flex-wrap:wrap;margin:20px 0}.controls label{display:grid;gap:5px;font-size:14px}select{font:inherit;padding:8px 24px 8px 10px;border:1px solid #aebcd1;border-radius:8px;background:white;color:inherit}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}.card,section{background:white;border:1px solid #dce4ef;border-radius:15px;padding:18px}.card span{display:block;color:#475a75;font-size:14px}.card strong{display:block;margin-top:6px;font-size:26px;font-variant-numeric:tabular-nums}.card:last-child{background:#e2eaff}section{margin-top:16px}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;font-variant-numeric:tabular-nums}th,td{text-align:right;padding:10px;border-bottom:1px solid #e4eaf3}th:first-child,td:first-child{text-align:left}thead{color:#475a75;font-size:13px}tfoot{font-weight:700;background:#eef3ff}.chart-row{display:grid;grid-template-columns:45px 1fr 78px;align-items:center;gap:10px;margin:8px 0;font-size:14px}.track{height:13px;background:#edf1f8;border-radius:3px;position:relative}.track::after{content:'';position:absolute;left:50%;height:100%;border-left:1px solid #75849e}.bar{position:absolute;height:100%;background:#355ccc;border-radius:3px}.bar.negative{background:#087764}.chart-row strong{text-align:right;font-variant-numeric:tabular-nums}footer{color:#475a75;font-size:13px}details summary{cursor:pointer;font-weight:650}
+</style>
+<main>
+<header><p>Автошкола «Перекрёсток» · январь–октябрь 2026</p><h1>Договоры и поступления</h1><p>Фактические показатели пяти городов</p></header>
+<div class="controls">
+<label>Период<select id="period"><option value="all">Январь–октябрь</option></select></label>
+<label>Город для помесячной динамики<select id="city"><option value="all">Вся сеть</option></select></label>
+</div>
+<div class="cards" id="cards" aria-live="polite"></div>
+<section><h2 id="comparison"></h2><div class="scroll"><table>
+<thead><tr><th scope="col">Город</th><th scope="col">Договоры, млн ₽</th><th scope="col">Поступления, млн ₽</th><th scope="col">Разница, млн ₽</th><th scope="col">% от поступлений</th></tr></thead>
+<tbody id="cities"></tbody><tfoot id="network"></tfoot></table></div></section>
+<section><h2 id="trend-title"></h2><div id="trend"></div></section>
+<section><details><summary id="monthly-title"></summary><div class="scroll"><table>
+<thead><tr><th scope="col">Месяц</th><th scope="col">Договоры, млн ₽</th><th scope="col">Поступления, млн ₽</th><th scope="col">Разница, млн ₽</th><th scope="col">% от поступлений</th></tr></thead>
+<tbody id="monthly"></tbody></table></div></details></section>
+<footer>
+<p>Разница = сумма проданных договоров − деньги, полученные от учеников. Процент = разница ÷ фактические поступления × 100%. Отрицательное значение означает, что поступления за период превысили сумму проданных за этот период договоров. Поступления могут включать оплаты по договорам предыдущих месяцев. Подтверждённые потери определяются по данным отдельных договоров.</p>
+<p>Источник — «Фактический финансовый результат УК с 2026 года (2).xlsx», городские листы «СВОД 26», строки 3 и 4. Сеть рассчитана суммой пяти городов. За январь–сентябрь сумма совпадает со сводом, октябрьский факт в своде пуст. Суммы округлены до 0,01 млн ₽ после расчётов.</p>
+</footer>
+</main>
+<script>
+const cities = ['Омск', 'Санкт-Петербург', 'Сочи', 'Тюмень', 'Екатеринбург'];
+const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь'];
+const shortMonths = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт'];
+const data = [[[13453501,11744973.85],[15443696,15328763.57],[17091899,17204640.8],[18449719,18154964],[18456648,17766119.91],[19289110,18799267],[21094178,20446123.75],[19858764,19509450.94],[20831667,18810999.45],[18075353,17223174.74]],[[7194400,5428712.24],[6997500,6842270.93],[8815400,8575307.61],[6998740,7422569],[6276890,6454781.57],[7883880,7206084],[7703620,8065094.6],[7529130,6299119.54],[8445805,7612197.22],[8209180,8856189.66]],[[6493400,5274066.04],[6570400,6255750.52],[8317760,7821029.39],[7167900,7858730],[6969450,6867367.29],[6949800,6588884],[8190200,7492824.93],[6824460,6549799.46],[7543120,7842596.83],[6985020,6853529.7]],[[5800320,4381107.98],[5098900,4476978.04],[6108120,5621846.97],[5501450,5396095],[5523640,5255634.01],[5745100,5192480],[6614050,5645579.5],[5180740,5176173.5],[6322600,5719158],[5542900,4961931]],[[1162200,847561],[1468750,1339714],[1576350,1590765.24],[1932800,1912081],[1991000,1696659.53],[2913550,2291849],[2959250,2707898.03],[2527550,2246125.07],[2739300,2815706.19],[4809400,3945282.62]]];
+const el = id => document.getElementById(id);
+const sum = values => values.reduce(([contracts, received], [a, b]) => [contracts + a, received + b], [0, 0]);
+const network = months.map((_, index) => sum(data.map(values => values[index])));
+const number = new Intl.NumberFormat('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const money = value => number.format(value / 1e6);
+const rate = ([contracts, received]) => received ? (contracts - received) / received * 100 : null;
+const percent = value => value === null ? '—' : number.format(value) + '%';
+function row(label, values) {
+  const [contracts, received] = values;
+  return '<tr><th scope="row">' + label + '</th><td>' + money(contracts) + '</td><td>' +
+    money(received) + '</td><td>' + money(contracts - received) + '</td><td>' + percent(rate(values)) + '</td></tr>';
+}
+months.forEach((label, index) => el('period').add(new Option(label, index)));
+cities.forEach((label, index) => el('city').add(new Option(label, index)));
+function renderComparison() {
+  const period = el('period').value;
+  const select = values => period === 'all' ? sum(values) : values[Number(period)];
+  const total = select(network);
+  const [contracts, received] = total;
+  const metrics = [
+    ['Продали договоров', money(contracts) + ' млн ₽'],
+    ['Получили от учеников', money(received) + ' млн ₽'],
+    ['Разница', money(contracts - received) + ' млн ₽'],
+    ['Разница от поступлений', percent(rate(total))]
+  ];
+  el('cards').innerHTML = metrics.map(([label, value]) =>
+    '<div class="card"><span>' + label + '</span><strong>' + value + '</strong></div>').join('');
+  el('comparison').textContent = 'Сравнение городов · ' + (period === 'all' ? 'январь–октябрь' : months[Number(period)].toLowerCase());
+  el('cities').innerHTML = cities.map((label, index) => row(label, select(data[index]))).join('');
+  el('network').innerHTML = row('Сеть', total);
+}
+function renderTrend() {
+  const city = el('city').value;
+  const values = city === 'all' ? network : data[Number(city)];
+  const name = city === 'all' ? 'Сеть' : cities[Number(city)];
+  const rates = values.map(rate);
+  const max = Math.max(1, ...rates.map(Math.abs));
+  el('trend-title').textContent = 'Разница от поступлений по месяцам · ' + name;
+  el('monthly-title').textContent = 'Помесячная таблица · ' + name;
+  el('monthly').innerHTML = months.map((label, index) => row(label, values[index])).join('');
+  el('trend').innerHTML = rates.map((value, index) => {
+    const width = Math.abs(value) / max * 50;
+    const left = value < 0 ? 50 - width : 50;
+    const className = value < 0 ? 'bar negative' : 'bar';
+    return '<div class="chart-row"><span>' + shortMonths[index] + '</span><div class="track" aria-hidden="true"><div class="' +
+      className + '" style="left:' + left + '%;width:' + width + '%"></div></div><strong>' + percent(value) + '</strong></div>';
+  }).join('');
+}
+el('period').addEventListener('change', renderComparison);
+el('city').addEventListener('change', renderTrend);
+renderComparison();
+renderTrend();
+</script>
+</html>
